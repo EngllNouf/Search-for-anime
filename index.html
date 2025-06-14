@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime Search | Premium</title>
+    <title>Anime Search | Safe Anime Discovery</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@700&display=swap">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="script.js"></script>
     <link rel="stylesheet" href="style.css">
-    
+   
 </head>
 <body>
     <div class="floating-elements">
@@ -30,11 +29,13 @@
         </div>
         
         <div id="error-message"></div>
+        <div id="content-warning"></div>
+        <div class="loader" id="loader"></div>
         <div id="anime-details"></div>
     </div>
     
     <footer>
-        &copy; 2023 Anime Search  | Designed with ❤️ for anime lovers
+        &copy; 2023 Anime Search | Designed with ❤️ for anime lovers
     </footer>
     
     <script>
@@ -63,6 +64,15 @@
                 
                 floatingContainer.appendChild(element);
             }
+            
+            // Set up event listeners
+            document.getElementById('search-button').addEventListener('click', searchAnime);
+            document.getElementById('clear-button').addEventListener('click', clearSearch);
+            document.getElementById('search-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchAnime();
+                }
+            });
         });
         
         // Add keyframe animation for floating elements
@@ -76,6 +86,146 @@
             }
         `;
         document.head.appendChild(styleSheet);
+        
+        // Function to check if anime is safe
+        function isAnimeSafe(anime) {
+            const unsafeRatings = ['Rx', 'R+'];
+            return !unsafeRatings.includes(anime.rating);
+        }
+        
+        // Function to get age rating class
+        function getAgeRatingClass(rating) {
+            if (!rating) return 'rating-safe';
+            
+            const safeRatings = ['G', 'PG', 'PG-13'];
+            const warningRatings = ['R', 'R+'];
+            const dangerRatings = ['Rx'];
+            
+            if (safeRatings.includes(rating)) return 'rating-safe';
+            if (warningRatings.includes(rating)) return 'rating-warning';
+            if (dangerRatings.includes(rating)) return 'rating-danger';
+            return 'rating-safe';
+        }
+        
+        async function searchAnime() {
+            const query = document.getElementById('search-input').value.trim();
+            const errorMessage = document.getElementById('error-message');
+            const warningMessage = document.getElementById('content-warning');
+            const animeDetails = document.getElementById('anime-details');
+            const loader = document.getElementById('loader');
+            
+            if (!query) {
+                errorMessage.textContent = 'Please enter an anime title';
+                errorMessage.style.display = 'block';
+                warningMessage.style.display = 'none';
+                animeDetails.style.display = 'none';
+                loader.style.display = 'none';
+                return;
+            }
+            
+            errorMessage.style.display = 'none';
+            warningMessage.style.display = 'none';
+            animeDetails.style.display = 'none';
+            loader.style.display = 'block';
+            
+            try {
+                // Using Jikan API (MyAnimeList's unofficial API)
+                const response = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=5`);
+                const data = await response.json();
+                
+                if (data.data && data.data.length > 0) {
+                    // Filter out potentially unsafe content
+                    const safeAnimeList = data.data.filter(anime => isAnimeSafe(anime));
+                    
+                    if (safeAnimeList.length > 0) {
+                        displayAnimeResults(safeAnimeList);
+                        
+                        // Show warning if some results were filtered
+                        if (safeAnimeList.length < data.data.length) {
+                            warningMessage.textContent = 'Some results were filtered due to content restrictions.';
+                            warningMessage.style.display = 'block';
+                        }
+                    } else {
+                        errorMessage.textContent = 'No appropriate anime found with that title';
+                        errorMessage.style.display = 'block';
+                    }
+                } else {
+                    errorMessage.textContent = 'No anime found with that title';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error fetching anime data:', error);
+                errorMessage.textContent = 'An error occurred while searching. Please try again.';
+                errorMessage.style.display = 'block';
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+        
+        function displayAnimeResults(animeList) {
+            const animeDetails = document.getElementById('anime-details');
+            animeDetails.innerHTML = '';
+            
+            animeList.forEach(anime => {
+                const animeCard = document.createElement('div');
+                animeCard.className = 'anime-card';
+                
+                // Format date
+                let startDate = 'Unknown';
+                if (anime.aired && anime.aired.from) {
+                    const date = new Date(anime.aired.from);
+                    startDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+                }
+                
+                // Format genres
+                let genres = 'Unknown';
+                if (anime.genres && anime.genres.length > 0) {
+                    genres = anime.genres.map(genre => genre.name).join(', ');
+                }
+                
+                // Age rating badge
+                const ageRatingClass = getAgeRatingClass(anime.rating);
+                const ageRatingBadge = anime.rating ? 
+                    `<span class="age-rating ${ageRatingClass}">${anime.rating}</span>` : '';
+                
+                animeCard.innerHTML = `
+                    ${ageRatingBadge}
+                    <div class="anime-poster">
+                        <img src="${anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || 'https://via.placeholder.com/200x300?text=No+Image'}" alt="${anime.title}">
+                    </div>
+                    <div class="anime-info">
+                        <h2>${anime.title}</h2>
+                        <div class="anime-meta">
+                            <span class="meta-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                                ${anime.score || 'N/A'}
+                            </span>
+                            <span class="meta-item">${anime.type || 'N/A'}</span>
+                            <span class="meta-item">${anime.episodes || 'N/A'} episodes</span>
+                            <span class="meta-item">${anime.status || 'N/A'}</span>
+                            <span class="meta-item">${startDate}</span>
+                        </div>
+                        <p><strong>Genres:</strong> ${genres}</p>
+                        <p><strong>Synopsis:</strong> ${anime.synopsis || 'No synopsis available.'}</p>
+                        ${anime.trailer?.url ? `<p><strong>Trailer:</strong> <a href="${anime.trailer.url}" target="_blank" rel="noopener noreferrer">Watch on YouTube</a></p>` : ''}
+                    </div>
+                `;
+                
+                animeDetails.appendChild(animeCard);
+            });
+            
+            animeDetails.style.display = 'block';
+        }
+        
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('content-warning').style.display = 'none';
+            document.getElementById('anime-details').style.display = 'none';
+            document.getElementById('loader').style.display = 'none';
+        }
     </script>
 </body>
 </html>
