@@ -4,7 +4,7 @@
 
 A stylish and elegant anime search application that allows users to find information about their favorite anime shows with a beautiful UI design.
 
-## Features ✨
+## ✨ Features 
 
 - **Modern UI Design**: Elegant gradient colors and smooth animations
 - **Responsive Layout**: Works on all device sizes
