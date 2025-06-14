@@ -1,6 +1,6 @@
 # Anime Search Application
 
-![Anime Search Screenshot](![alt text](image.png))
+![Anime Search Screenshot](image.png)
 
 A stylish and elegant anime search application that allows users to find information about their favorite anime shows with a beautiful UI design.
 
