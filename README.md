@@ -13,7 +13,7 @@ A stylish and elegant anime search application that allows users to find informa
 - **Interactive Elements**: Hover effects and transitions
 - **Floating Background Elements**: Dynamic decorative elements
 
-## Technologies Used 🛠️
+## 🛠️ Technologies Used 
 
 - HTML5
 - CSS3 (with modern features like backdrop-filter)
@@ -21,7 +21,7 @@ A stylish and elegant anime search application that allows users to find informa
 - jQuery
 - Google Fonts (Montserrat & Playfair Display)
 
-## Design Elements 🎨
+## 🎨 Design Elements 
 
 - **Color Scheme**:
   - Primary: #6a0dad (Purple)
@@ -32,18 +32,18 @@ A stylish and elegant anime search application that allows users to find informa
   - Headings: Playfair Display (Elegant serif)
   - Body: Montserrat (Clean sans-serif)
 
-## Installation 💻
+## 💻 Installation 
 
 No installation required! Just open the `index.html` file in your browser.
 
-## Usage 🚀
+## 🚀 Usage 
 
 1. Enter an anime title in the search box
 2. Click "Search" button
 3. View detailed information about the anime
 4. Use "Clear" button to reset the search
 
-## Customization 🛠
+##  🛠 Customization 
 
 You can easily customize:
 
@@ -54,7 +54,7 @@ You can easily customize:
 
 
 
-## Contributing 🤝
+## 🤝 Contributing 
 
 Contributions are welcome! Please follow these steps:
 
@@ -75,4 +75,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ---
 
-Made with ❤️ by [ EngllNouf ] 
+Made with ❤️ by [EngllNouf](https://github.com/EngllNouf)
