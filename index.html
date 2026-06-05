@@ -226,6 +226,45 @@
             document.getElementById('anime-details').style.display = 'none';
             document.getElementById('loader').style.display = 'none';
         }
+
+
+
+
+        function isAnimeSafe(anime) {
+    // ✅ منع التصنيفات الخطرة
+    const unsafeRatings = ['Rx', 'R+', 'R - 17+'];
+    
+    // ✅ منع الأنواع المحظورة (Hentai, Ecchi, etc.)
+    const unsafeGenres = ['Hentai', 'Ecchi', 'Erotica'];
+    
+    // ✅ فحص التصنيف
+    if (unsafeRatings.some(rating => anime.rating?.includes(rating))) {
+        return false;
+    }
+    
+    // ✅ فحص الأنواع (Genres)
+    if (anime.genres && anime.genres.length > 0) {
+        const hasUnsafeGenre = anime.genres.some(genre => 
+            unsafeGenres.some(unsafe => genre.name?.toLowerCase().includes(unsafe.toLowerCase()))
+        );
+        if (hasUnsafeGenre) return false;
+    }
+    
+    // ✅ فحص الـ Explicit Genres
+    if (anime.explicit_genres && anime.explicit_genres.length > 0) {
+        return false;
+    }
+    
+    // ✅ فحص الـ Demographics
+    if (anime.demographics && anime.demographics.length > 0) {
+        const hasAdultDemo = anime.demographics.some(demo => 
+            demo.name?.toLowerCase().includes('hentai')
+        );
+        if (hasAdultDemo) return false;
+    }
+    
+    return true;
+}
     </script>
 </body>
 </html>
